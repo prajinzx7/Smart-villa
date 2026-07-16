@@ -4,7 +4,12 @@ import '../../services/automation_service.dart';
 
 
 class AutomationEditorScreen extends StatefulWidget {
-  const AutomationEditorScreen({super.key});
+  final AutomationModel? automation;
+
+  const AutomationEditorScreen({
+    super.key,
+    this.automation,
+  });
 
   @override
   State<AutomationEditorScreen> createState() =>
@@ -30,6 +35,43 @@ class _AutomationEditorScreenState
 
 
   String selectedScene = "Good Night";
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.automation != null) {
+
+      nameController.text = widget.automation!.name;
+
+      selectedScene = widget.automation!.sceneName;
+
+      startTime = parseTime(widget.automation!.startTime);
+
+      endTime = parseTime(widget.automation!.endTime);
+    }
+  }
+
+  TimeOfDay parseTime(String time) {
+
+    final now = DateTime.now();
+
+    final date = TimeOfDay.fromDateTime(
+      DateTime(
+        now.year,
+        now.month,
+        now.day,
+        int.parse(
+          time.split(":")[0],
+        ),
+        int.parse(
+          time.split(":")[1].split(" ")[0],
+        ),
+      ),
+    );
+
+    return date;
+  }
 
 
   Future<void> pickStartTime() async {
@@ -63,26 +105,32 @@ class _AutomationEditorScreenState
 
 
   Future<void> save() async {
-    try {
-      final automation = AutomationModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: nameController.text.trim(),
-        startTime: startTime.format(context),
-        endTime: endTime.format(context),
-        sceneName: selectedScene,
-        enabled: true,
-      );
 
+    final automation = AutomationModel(
+
+      id: widget.automation?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
+
+      name: nameController.text.trim(),
+
+      startTime: startTime.format(context),
+
+      endTime: endTime.format(context),
+
+      sceneName: selectedScene,
+
+      enabled: widget.automation?.enabled ?? true,
+    );
+
+    if (widget.automation == null) {
       await service.addAutomation(automation);
-
-      print("Automation saved successfully");
-
-      if (!mounted) return;
-
-      Navigator.pop(context);
-    } catch (e) {
-      print("SAVE ERROR: $e");
+    } else {
+      await service.updateAutomation(automation);
     }
+
+    if (!mounted) return;
+
+    Navigator.pop(context);
   }
 
 

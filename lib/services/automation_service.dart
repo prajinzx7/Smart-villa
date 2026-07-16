@@ -60,8 +60,27 @@ class AutomationService {
     );
   }
 
-  Future<void> clearAutomations() async {
+  Future<void> updateAutomation(
+      AutomationModel updatedAutomation,
+      ) async {
+
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove("automations");
+
+    final automations = await getAutomations();
+
+    final index = automations.indexWhere(
+          (a) => a.id == updatedAutomation.id,
+    );
+
+    if (index == -1) return;
+
+    automations[index] = updatedAutomation;
+
+    await prefs.setString(
+      "automations",
+      jsonEncode(
+        automations.map((e) => e.toJson()).toList(),
+      ),
+    );
   }
 }

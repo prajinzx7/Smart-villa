@@ -20,14 +20,70 @@ class _AutomationScreenState
 
   List<AutomationModel> automations = [];
 
+  void showAutomationOptions(
+      AutomationModel automation,
+      ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text("Edit Automation"),
+                onTap: () {
+                  Navigator.pop(context);
+
+                  // We'll implement next
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                title: const Text(
+                  "Delete Automation",
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+                onTap: () async {
+
+                  Navigator.pop(context);
+
+                  await automationService.deleteAutomation(
+                    automation.id,
+                  );
+
+                  await loadAutomations();
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text("Cancel"),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   @override
   void initState() {
     super.initState();
-
-    automationService.clearAutomations().then((_) {
-      loadAutomations();
-    });
+    loadAutomations();
   }
 
 
@@ -81,14 +137,30 @@ class _AutomationScreenState
                     "Runs: ${automation.sceneName}",
               ),
 
+              onLongPress: () {
+                showAutomationOptions(
+                  automation,
+                );
+              },
+
 
               trailing: Switch(
                 value: automation.enabled,
 
-                onChanged: (value){
+                onChanged: (value) async {
 
-                  // enable/disable later
+                  final updated = AutomationModel(
+                    id: automation.id,
+                    name: automation.name,
+                    startTime: automation.startTime,
+                    endTime: automation.endTime,
+                    sceneName: automation.sceneName,
+                    enabled: value,
+                  );
 
+                  await automationService.updateAutomation(updated);
+
+                  await loadAutomations();
                 },
               ),
 

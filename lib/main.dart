@@ -3,8 +3,16 @@ import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
+import 'services/automation_engine.dart';
 
 void main() {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final automationEngine = AutomationEngine();
+
+  automationEngine.start();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppProvider(),
