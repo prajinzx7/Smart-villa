@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../services/device_service.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
+import 'package:provider/provider.dart';
+import '../../providers/device_provider.dart';
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key});
@@ -12,6 +14,14 @@ class DevicesScreen extends StatefulWidget {
 
 class _DevicesScreenState extends State<DevicesScreen> {
   final service = DeviceService();
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<DeviceProvider>().loadDevices();
+    });
+  }
 
 
   String getRoomName(String roomId) {
@@ -28,10 +38,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     final roomId = ModalRoute.of(context)?.settings.arguments?.toString();
     final app = Provider.of<AppProvider>(context);
+    final deviceProvider = context.watch<DeviceProvider>();
+
+    print("Firebase devices: ${deviceProvider.devices.length}");
 
     final devices = service.getDevices()
         .where((d) => d.roomId == roomId)
@@ -43,14 +55,14 @@ class _DevicesScreenState extends State<DevicesScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.power_off),
-            onPressed: () {
-              app.turnOffRoom(roomId!);
+            onPressed: () async {
+              await app.turnOffRoom(roomId!);
             },
           ),
           IconButton(
             icon: const Icon(Icons.power),
-            onPressed: () {
-              app.turnOnRoom(roomId!);
+            onPressed: () async {
+              await app.turnOnRoom(roomId!);
             },
           ),
         ],
