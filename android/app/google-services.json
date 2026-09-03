@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "702865549166",
+    "project_id": "smart-villa-prime",
+    "storage_bucket": "smart-villa-prime.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702865549166:android:27195b9425f967d447437f",
+        "android_client_info": {
+          "package_name": "com.example.smart_villa_prime"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVyzJxWPu5q8_h3J9yv9ZhWClCecivsKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
